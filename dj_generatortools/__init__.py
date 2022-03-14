@@ -10,7 +10,7 @@ from cookiecutter.main import cookiecutter
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 
-from generatortools.utils import (
+from dj_generatortools.utils import (
     camelcase2snakecase,
     configure_django_environ,
     create_content,
@@ -28,8 +28,8 @@ def main(app_name, model_name, field=None):
     Will create a model, including views, templates and urlpatterns, for a given app.
     """
     parts = __file__.split(os.sep)[:-2]
-    parts.append("generatortools")
-    generatortools_path = os.sep.join(parts)
+    parts.append("dj_generatortools")
+    dj_generatortools_path = os.sep.join(parts)
     configure_django_environ(os.getcwd())
     from django.apps import apps
 
@@ -110,7 +110,7 @@ def main(app_name, model_name, field=None):
             f"{app_name} does not have a admin.py file. This is required."
         )
 
-    stubbs_folder = os.path.join(generatortools_path, "stubbs", "default")
+    stubbs_folder = os.path.join(dj_generatortools_path, "stubbs", "default")
 
     if not os.path.exists(stubbs_folder):
         raise SystemError("Missing expected subbs-folder at %s" % stubbs_folder)
@@ -192,7 +192,7 @@ def startbigapp(app_name):
         raise SystemError("There is allready an app called %s" % app_name)
 
     parts = __file__.split(os.sep)[:-2]
-    parts.append("generatortools")
+    parts.append("dj_generatortools")
     parts.append("cookiecutter_recipes")
     parts.append("bigapp")
     recipe_folder = os.sep.join(parts)

@@ -11,7 +11,7 @@ except ImportError:
 
 
 def get_version(*file_paths):
-    """Retrieves the version from generatortools/__init__.py"""
+    """Retrieves the version from dj_generatortools/__init__.py"""
     filename = os.path.join(os.path.dirname(__file__), *file_paths)
     version_file = open(filename).read()
     version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file, re.M)
@@ -20,7 +20,7 @@ def get_version(*file_paths):
     raise RuntimeError("Unable to find version string.")
 
 
-version = get_version("generatortools", "__init__.py")
+version = get_version("dj_generatortools", "__init__.py")
 
 
 if sys.argv[-1] == "publish":
@@ -53,17 +53,17 @@ setup(
     author_email="thomas@weholt.org",
     url="https://github.com/weholt/django-generatortools",
     packages=[
-        "generatortools",
+        "dj_generatortools",
     ],
     include_package_data=True,
     install_requires=requirements,
     license="MIT",
     zip_safe=False,
-    keywords="django-generatortools",
+    keywords="django, scaffolding, crud",
     entry_points={
         "console_scripts": [
-            "add_model = generatortools:main",
-            "startbigapp = generatortools:startbigapp",
+            "add_model = dj_generatortools:main",
+            "startbigapp = dj_generatortools:startbigapp",
         ]
     },
     classifiers=[

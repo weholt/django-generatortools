@@ -23,8 +23,9 @@ from dj_generatortools.utils import (
 @click.argument("app_name")
 @click.option("--field", "-f", multiple=True)
 @click.option("--stubbs", "-s")
+@click.option("--base_html", "-b")
 @click.command()
-def main(app_name, model_name, field=None, stubbs=None):
+def main(app_name, model_name, field=None, stubbs=None, base_html=None):
     """
     Will create a model, including views, templates and urlpatterns, for a given app.
     """
@@ -158,9 +159,13 @@ def main(app_name, model_name, field=None, stubbs=None):
     if not os.path.exists(target_template_folder):
         os.makedirs(target_template_folder)
 
-    if not os.path.exists(os.path.join(app.path, "templates", "base.html")):
+    base_html_filename = os.path.join(source_template_folder, base_html or "base.html")
+    if not os.path.exists(base_html_filename):
+        raise SystemError("Base html specified as '%s' does not exist." % base_html)
+
+    if not os.path.exists(os.path.join(app.path, "templates", base_html_filename)):
         shutil.copy(
-            os.path.join(source_template_folder, "base.html"),
+            base_html_filename,
             os.path.join(app.path, "templates", "base.html"),
         )
 

@@ -2,15 +2,15 @@
 __version__ = "0.1.0"
 
 import os
+import pprint
 import shutil
 
 import click as click
 from cookiecutter.exceptions import OutputDirExistsException
 from cookiecutter.main import cookiecutter
-from django.template import TemplateDoesNotExist
-from django.template.loader import get_template
 
 from dj_generatortools.utils import (
+    Field,
     camelcase2snakecase,
     configure_django_environ,
     create_content,
@@ -25,40 +25,20 @@ from dj_generatortools.utils import (
 @click.option("--stubbs", "-s")
 @click.option("--base_html", "-b")
 @click.command()
-def main(app_name, model_name, field=None, stubbs=None, base_html=None):
+def add_model(app_name, model_name, field=None, stubbs=None, base_html=None):
     """
     Will create a model, including views, templates and urlpatterns, for a given app.
     """
-    parts = __file__.split(os.sep)[:-2]
-    parts.append("dj_generatortools")
-    dj_generatortools_path = os.sep.join(parts)
-    configure_django_environ(os.getcwd())
-    from django.apps import apps
-
     snake_case_model_name = camelcase2snakecase(model_name)
-    fields = []
-    for f in field:
-        name, value = [k.strip() for k in f.split(":")]
-        fields.append(
-            {
-                "name": name,
-                "type": value,
-                "db_fieldtype": getdbfieldtype(value),
-                "dataclass_attribute": getdataclassfieldtype(value),
-            }
-        )
+    fields = [Field(field) for field in field]
 
     date_hierarchy_field = next(
-        (
-            x["name"]
-            for x in fields
-            if x["type"] in ["date", "datetime", "auto_now_add", "auto_now"]
-        ),
+        (x.name for x in fields if x.date_field),
         None,
     )
 
-    searchable_fields = [f["name"] for f in fields if f["type"] == "str"]
-    filter_fields = [f["name"] for f in fields if f["type"] == "bool"]
+    searchable_fields = [f.name for f in fields if f.searchable]
+    filter_fields = [f.name for f in fields if f.filter_field]
 
     context = {
         "custom_id": "id" in fields,
@@ -73,6 +53,12 @@ def main(app_name, model_name, field=None, stubbs=None, base_html=None):
 
     if not model_name.isalnum():
         raise SystemError("Model names can only be alphanumeric characters.")
+
+    parts = __file__.split(os.sep)[:-2]
+    parts.append("dj_generatortools")
+    dj_generatortools_path = os.sep.join(parts)
+    configure_django_environ(os.getcwd())
+    from django.apps import apps
 
     existing_app = [app for app in apps.get_app_configs() if app.name == app_name]
     if not existing_app:
@@ -163,7 +149,7 @@ def main(app_name, model_name, field=None, stubbs=None, base_html=None):
     if not os.path.exists(base_html_filename):
         raise SystemError("Base html specified as '%s' does not exist." % base_html)
 
-    if not os.path.exists(os.path.join(app.path, "templates", base_html_filename)):
+    if not os.path.exists(os.path.join(app.path, "templates", "base.html")):
         shutil.copy(
             base_html_filename,
             os.path.join(app.path, "templates", "base.html"),
@@ -182,8 +168,6 @@ def main(app_name, model_name, field=None, stubbs=None, base_html=None):
                 os.path.join(target_template_folder, filename),
                 context,
             )
-
-    import pprint
 
     pprint.pprint(context)
 
@@ -223,4 +207,4 @@ def startbigapp(app_name):
 
 
 if __name__ == "__main__":
-    main()
+    add_model()

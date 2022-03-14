@@ -36,7 +36,7 @@ class {{model_name}}ListView(ListView):
 class {{model_name}}CreateView(CreateView):
     model = {{model_name}}
     template_name = '{{app_name}}/{{snake_case_model_name}}/create.html'
-    fields = ({% for field in fields %}'{{field.name}}', {% endfor %} )
+    fields = ({% for field in fields %}{% if field.editable %}'{{field.name}}',{% endif %}{% endfor %} )
     success_url = reverse_lazy('{{app_name}}:{{snake_case_model_name}}-list')
 
 
@@ -53,7 +53,7 @@ class {{model_name}}UpdateView(UpdateView):
     model = {{model_name}}
     template_name = '{{app_name}}/{{snake_case_model_name}}/update.html'
     context_object_name = '{{snake_case_model_name}}'
-    fields = ({% for field in fields %}'{{field.name}}', {% endfor %} )
+    fields = ({% for field in fields %}{% if field.editable %}'{{field.name}}',{% endif %}{% endfor %} )
 
     def get_success_url(self):
         return reverse_lazy('{{app_name}}:{{snake_case_model_name}}-list')

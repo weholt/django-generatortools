@@ -136,3 +136,34 @@ def configure_django_environ(folder):
         ) from exc
 
     django.setup()
+
+
+class Field:
+    "A special kind of field, representing both a database model and a dataclass"
+
+    def __init__(self, init_string: str):
+        self.name, value = [k.strip() for k in init_string.split(":")]
+        self.type = value
+        self.db_fieldtype = getdbfieldtype(value)
+        self.dataclass_attribute = getdataclassfieldtype(value)
+        self.searchable = self.type == "str"
+        self.filter_field = self.type == "bool"
+        self.date_field = value in ["date", "datetime", "auto_now", "auto_now_add"]
+        self.editable = value not in ["auto_now", "auto_now_add"]
+
+    def __str__(self):
+        return f"<{self.name} ({self.type})>"
+
+    def __repr__(self):
+        return f"<{self.name} ({self.type})>"
+
+    def dump(self):
+        return f"""
+Name: {self.name}
+Type: {self.type}
+Database fieldtype: {self.db_fieldtype}
+Dataclass fieldtype: {self.dataclass_attribute}
+Searchable: {self.searchable}
+Filter field: {self.filter_field}
+Date field: {self.date_field}
+"""

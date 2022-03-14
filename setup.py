@@ -62,7 +62,7 @@ setup(
     keywords="django, scaffolding, crud",
     entry_points={
         "console_scripts": [
-            "add_model = dj_generatortools:main",
+            "add_model = dj_generatortools:add_model",
             "startbigapp = dj_generatortools:startbigapp",
         ]
     },

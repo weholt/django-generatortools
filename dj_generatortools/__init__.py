@@ -22,8 +22,9 @@ from dj_generatortools.utils import (
 @click.argument("model_name")
 @click.argument("app_name")
 @click.option("--field", "-f", multiple=True)
+@click.option("--stubbs", "-s")
 @click.command()
-def main(app_name, model_name, field=None):
+def main(app_name, model_name, field=None, stubbs=None):
     """
     Will create a model, including views, templates and urlpatterns, for a given app.
     """
@@ -110,7 +111,12 @@ def main(app_name, model_name, field=None):
             f"{app_name} does not have a admin.py file. This is required."
         )
 
-    stubbs_folder = os.path.join(dj_generatortools_path, "stubbs", "default")
+    stubb_base = os.path.join(dj_generatortools_path, "stubbs")
+    stubbs_available = [f for f in os.listdir(stubb_base) if os.path.isdir(f)]
+    if stubbs and stubbs not in stubbs_available:
+        raise SystemError("Unknown stubb selected (%s)." % stubbs)
+
+    stubbs_folder = os.path.join(stubb_base, stubbs or "default")
 
     if not os.path.exists(stubbs_folder):
         raise SystemError("Missing expected subbs-folder at %s" % stubbs_folder)

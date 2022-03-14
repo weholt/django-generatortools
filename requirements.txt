@@ -5,5 +5,3 @@ black
 isort
 twine
 wheel
-django-ninja
-django-htmx

@@ -2,8 +2,13 @@
 __version__ = "0.1.0"
 
 import os
+import shutil
 
 import click as click
+from cookiecutter.exceptions import OutputDirExistsException
+from cookiecutter.main import cookiecutter
+from django.template import TemplateDoesNotExist
+from django.template.loader import get_template
 
 from generatortools.utils import (
     camelcase2snakecase,
@@ -22,7 +27,9 @@ def main(app_name, model_name, field=None):
     """
     Will create a model, including views, templates and urlpatterns, for a given app.
     """
-    generatortools_path = os.sep.join(__file__.split(os.sep)[:-2])
+    parts = __file__.split(os.sep)[:-2]
+    parts.append("generatortools")
+    generatortools_path = os.sep.join(parts)
     configure_django_environ(os.getcwd())
     from django.apps import apps
 
@@ -103,12 +110,6 @@ def main(app_name, model_name, field=None):
             f"{app_name} does not have a admin.py file. This is required."
         )
 
-    template_folder = os.path.join(app.path, "templates", app_name)
-    if os.path.exists(template_folder):
-        raise SystemError(
-            f"{app_name} allready has a folder for templates called {model_name}"
-        )
-
     stubbs_folder = os.path.join(generatortools_path, "stubbs", "default")
 
     if not os.path.exists(stubbs_folder):
@@ -143,12 +144,71 @@ def main(app_name, model_name, field=None):
             context,
         )
 
+    source_template_folder = os.path.join(stubbs_folder, "templates")
+    target_template_folder = os.path.join(
+        app.path, "templates", app_name, snake_case_model_name
+    )
+
+    if not os.path.exists(target_template_folder):
+        os.makedirs(target_template_folder)
+
+    if not os.path.exists(os.path.join(app.path, "templates", "base.html")):
+        shutil.copy(
+            os.path.join(source_template_folder, "base.html"),
+            os.path.join(app.path, "templates", "base.html"),
+        )
+
+    for filename in [
+        "create.html",
+        "delete.html",
+        "detail.html",
+        "list.html",
+        "update.html",
+    ]:
+        if not os.path.exists(os.path.join(target_template_folder, filename)):
+            create_content(
+                open(os.path.join(source_template_folder, filename)).read(),
+                os.path.join(target_template_folder, filename),
+                context,
+            )
+
     import pprint
 
     pprint.pprint(context)
 
     os.system("black %s" % app.path)
     os.system("isort --atomic %s" % app.path)
+
+
+@click.command()
+@click.argument("app_name")
+def startbigapp(app_name):
+
+    configure_django_environ(os.getcwd())
+    from django.apps import apps
+
+    existing_app = [app for app in apps.get_app_configs() if app.name == app_name]
+    if existing_app:
+        raise SystemError("There is allready an app called %s" % app_name)
+
+    parts = __file__.split(os.sep)[:-2]
+    parts.append("generatortools")
+    parts.append("cookiecutter_recipes")
+    parts.append("bigapp")
+    recipe_folder = os.sep.join(parts)
+
+    if not os.path.exists(recipe_folder):
+        raise SystemError(
+            "Folder for cookiecutter-recipes not found at %s" % recipe_folder
+        )
+    try:
+        extra_context = {
+            "app_name": app_name,
+            "snake_case_app_name": camelcase2snakecase(app_name),
+        }
+        cookiecutter(recipe_folder, None, no_input=True, extra_context=extra_context)
+    except OutputDirExistsException:
+        print("There is allready an app with that name")
 
 
 if __name__ == "__main__":

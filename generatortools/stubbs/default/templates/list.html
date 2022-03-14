@@ -1,23 +1,44 @@
-{% extends "base.html" %}
+[[% extends 'base.html' %]]
 
-{% block container %}
-<a href="[[% url '{{snake_case_model_name}}-create' %]]" class="btn btn-primary m-1">Add</a>
+[[% block content %]]
+<h2 class="text-center">{{model_name|title}}</h2>
+
 <table class="table table-striped">
     <thead>
       <tr>
-        {% for field in fields %}
-        <th scope="col">{{field.name}}</th>
-        {% enfor %}
+        {% for field in fields %}<th scope="col">{{field.name|title}}</th>
+        {% endfor %}
+        <th>&nbsp;</th>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        [[% for {{snake_case_model_name}} in {{snake_case_model_name}}s %]]          
-        {% for field in fields %}
-        <td scope="col">[[row.{{field.name}}]]</td>
-        {% enfor %}
-        [[% endfor %]]
+      [[% for {{snake_case_model_name}} in {{snake_case_model_name}}s %]]      
+      <tr>                  
+        {% for field in fields %}<td scope="col">{% if forloop.counter == 1%}<a href="[[% url '{{app_name}}:{{snake_case_model_name}}-detail' {{snake_case_model_name}}.id %]]">{% endif %}[[[[{{snake_case_model_name}}.{{field.name}}]]]]{% if forloop.counter == 1 %}</a>{% endif %}</td>{% endfor %}
+        <td><a href="[[% url '{{app_name}}:{{snake_case_model_name}}-update' {{snake_case_model_name}}.id %]]">U</a>&nbsp;
+          <a href="[[% url '{{app_name}}:{{snake_case_model_name}}-delete' {{snake_case_model_name}}.id %]]">D</a></td>
       </tr>
+      [[% endfor %]]
     </tbody>
 </table>
-{% endblock %}
+
+<div class="pagination">
+  <span class="step-links">
+      {% if page_obj.has_previous %}
+          <a href="?page=1">&laquo; first</a>
+          <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+      {% endif %}
+
+      <span class="current">
+          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+      </span>
+
+      {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}">next</a>
+          <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+      {% endif %}
+  </span>
+</div>
+
+<a href="[[% url '{{app_name}}:{{snake_case_model_name}}-create' %]]" class="btn btn-primary m-1">Add</a>
+[[% endblock %]]

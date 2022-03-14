@@ -1,0 +1,14 @@
+[[% extends 'base.html' %]]
+
+[[% block content %]]
+
+Details about the {{model_name}}.
+<ul>{% for field in fields %}
+    <li>{{field.name|title }}: [[[[{{snake_case_model_name}}.{{field.name}}]]]]</li>
+{% endfor %}</ul>
+
+<a href="[[% url '{{app_name}}:{{snake_case_model_name}}-update' {{snake_case_model_name}}.id %]]" class="btn btn-primary m-1">Update</a>
+<a href="[[% url '{{app_name}}:{{snake_case_model_name}}-delete' {{snake_case_model_name}}.id %]]" class="btn btn-primary m-1">Delete</a>
+<a href="[[% url '{{app_name}}:{{snake_case_model_name}}-list' %]]" class="btn btn-primary m-1">Back to list</a>
+
+[[% endblock %]]

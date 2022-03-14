@@ -5,3 +5,4 @@ include LICENSE
 include README.rst
 recursive-include generatortools *.html *.png *.gif *js *.css *jpg *jpeg *svg *py
 recursive-include stubbs *
+include generatortools/cookiecutter_recipes/bigapp/cookiecutter.json

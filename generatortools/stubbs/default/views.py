@@ -5,8 +5,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-
-from .models.{{snake_case_model_name}} import {{model_name}}
+from {{app_name}}.models.{{snake_case_model_name}} import {{model_name}}
 
 
 @method_decorator(login_required, name="dispatch")
@@ -38,7 +37,7 @@ class {{model_name}}CreateView(CreateView):
     model = {{model_name}}
     template_name = '{{app_name}}/{{snake_case_model_name}}/create.html'
     fields = ({% for field in fields %}'{{field.name}}', {% endfor %} )
-    success_url = reverse_lazy('{{snake_case_model_name}}-list')
+    success_url = reverse_lazy('{{app_name}}:{{snake_case_model_name}}-list')
 
 
 @method_decorator(login_required, name='dispatch')
@@ -57,11 +56,12 @@ class {{model_name}}UpdateView(UpdateView):
     fields = ({% for field in fields %}'{{field.name}}', {% endfor %} )
 
     def get_success_url(self):
-        return reverse_lazy('{{snake_case_model_name}}-detail', kwargs={'pk': self.object.id})
+        return reverse_lazy('{{app_name}}:{{snake_case_model_name}}-list')
+        #return reverse_lazy('{{app_name}}:{{snake_case_model_name}}-detail', kwargs={'pk': self.object.id})
 
 
 @method_decorator(login_required, name='dispatch')
 class {{model_name}}DeleteView(DeleteView):
     model = {{model_name}}
     template_name = '{{app_name}}/{{snake_case_model_name}}/delete.html'
-    success_url = reverse_lazy('{{snake_case_model_name}}-list')
+    success_url = reverse_lazy('{{app_name}}:{{snake_case_model_name}}-list')

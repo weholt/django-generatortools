@@ -103,11 +103,11 @@ def configure_django_environ(folder):
 
     correct_line = next(
         (
-            [
+            (
                 line
                 for line in open(manage_py_file).readlines()
                 if "os.environ.setdefault" in line
-            ]
+            )
         ),
         None,
     )
@@ -120,7 +120,7 @@ def configure_django_environ(folder):
     settings_folder = (
         correct_line.strip()
         .replace("os.environ.setdefault('DJANGO_SETTINGS_MODULE', '", "")
-        .replace(".settings'", "")
+        .replace(".settings')", "")
     )
 
     sys.path.append(folder)

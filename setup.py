@@ -60,7 +60,12 @@ setup(
     license="MIT",
     zip_safe=False,
     keywords="django-generatortools",
-    entry_points={"console_scripts": ["add_model = generatortools:main"]},
+    entry_points={
+        "console_scripts": [
+            "add_model = generatortools:main",
+            "startbigapp = generatortools:startbigapp",
+        ]
+    },
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Framework :: Django :: 4.0",

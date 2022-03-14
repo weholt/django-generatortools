@@ -1,16 +1,16 @@
-{% extends "base.html" %}
+[[% extends 'base.html' %]]
 
-{% block container %}
+[[% block content %]]
 <div class="card">
     <div class="card-header">
         <h5 class="card-title">Update {{model_name}}</h5>
     </div>
     <div class="card-body">
         <form method="post">
-            {% csrf_token %}
-            {{form.as_p}}
+            [[% csrf_token %]]
+            [[[[form.as_p]]]]
             <button type="submit" class="btn btn-success">Update</button>
         </form>
     </div>
 </div>
-{% endblock %}
+[[% endblock %]]

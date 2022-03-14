@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block container %}
+<a href="[[% url '{{snake_case_model_name}}-create' %]]" class="btn btn-primary m-1">Add</a>
+<table class="table table-striped">
+    <thead>
+      <tr>
+        {% for field in fields %}
+        <th scope="col">{{field.name}}</th>
+        {% enfor %}
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        [[% for {{snake_case_model_name}} in {{snake_case_model_name}}s %]]          
+        {% for field in fields %}
+        <td scope="col">[[row.{{field.name}}]]</td>
+        {% enfor %}
+        [[% endfor %]]
+      </tr>
+    </tbody>
+</table>
+{% endblock %}

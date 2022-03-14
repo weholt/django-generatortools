@@ -1,0 +1,8 @@
+django
+click
+cookiecutter
+black
+isort
+twine
+wheel
+django-ninja

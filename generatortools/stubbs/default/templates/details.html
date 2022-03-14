@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+Details about the {{model_name}}.
+<ul>
+    {% for field in fields %}<li>{{field.name|title }}: [[{{snake_case_model_name}}.{{field.name}}]]</li>{% endfor %}
+</ul>
+
+<a href="[[% url '{{snake_case_model_name}}-update' [[{{snake_case_model_name}}.id]] %]]" class="btn btn-primary m-1">Update</a>
+<a href="[[% url '{{snake_case_model_name}}-delete' [[{{snake_case_model_name}}.id]] %]]" class="btn btn-primary m-1">Delete</a>
+
+{% endblock %}
